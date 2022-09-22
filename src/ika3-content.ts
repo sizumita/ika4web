@@ -40,7 +40,6 @@ async function loginFlow() {
 
 function addButton() {
     const elem = Array.from(document.getElementsByClassName("NavigationBar_exitButton__Q2OHE"))[0]
-    console.log(elem)
     if (!elem) return
     (elem as HTMLButtonElement).addEventListener("click", async () => {
         await chrome.storage.local.clear()
@@ -51,7 +50,6 @@ function addButton() {
 function initialize() {
 
     chrome.storage.local.get(items => {
-        console.log(items)
         if (typeof items.session_token === "undefined") {
             loginFlow().catch(console.error)
             return

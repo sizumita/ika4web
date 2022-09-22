@@ -1,7 +1,7 @@
 {
   "name": "ika4web",
   "version": "1.0.0",
-  "description": "イカリング3 for web",
+  "description": "splanet3 for web",
   "scripts": {
     "build:generate": "esbuild `find src \\( -name '*.ts' -o -name '*.tsx' \\)` --bundle --outdir=build",
     "build:bundle": "cp public/* build",

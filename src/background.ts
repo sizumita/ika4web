@@ -89,7 +89,7 @@ async function login(access_token: string, id_token: string, user_info: any) {
 
     const data = await resp.json()
     if (typeof data.result === "undefined") {
-        throw new Error("ログインできませんでした。")
+        throw new Error(`could not login: ${JSON.stringify(data)}`)
     }
 
     return data['result']['webApiServerCredential']['accessToken']
@@ -124,7 +124,7 @@ async function getWebServiceToken(new_access_token: string) {
     })
     const data = await resp.json()
     if (typeof data.result === "undefined") {
-        throw new Error(`スプラ3のトークンを手に入れることができませんでした: ${JSON.stringify(data)}`)
+        throw new Error(`could not get token: ${JSON.stringify(data)}`)
     }
 
     return [data['result']['accessToken'], Date.now() + (data['result']['expiresIn'] * 1000)]
@@ -136,7 +136,7 @@ async function getAccessToken(session_token: string, sendResponse: (response?: a
         await chrome.storage.local.clear()
         sendResponse({
             status: false,
-            reason: "アクセストークンが取得できませんでした。データを消去しました。ページをリロードして再度ログインしてください。"
+            reason: "could not get access token. please reload this page."
         })
     }
     try {

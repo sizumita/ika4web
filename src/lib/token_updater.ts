@@ -15,9 +15,6 @@ export async function updateToken(data: {[p: string]: any}) {
         action: "get_access_token",
         session_token,
     }, (resp: {status: boolean, reason?: string, access_token?: string, expiresAt?: number}) => {
-        console.log("fetched token")
-        console.log(resp)
-        console.log(resp.access_token)
         if (!resp.status) {
             alert(resp.reason!)
             return
