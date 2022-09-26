@@ -25,5 +25,6 @@ export async function updateToken(data: {[p: string]: any}) {
         cookies.set("_gtoken", resp.access_token!, {
             samesite: "Strict"
         })
+        window.location.reload()
     })
 }
