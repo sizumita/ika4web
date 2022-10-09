@@ -1,4 +1,4 @@
-const APP_VERSION = "2.2.0"
+const APP_VERSION = "2.3.1"
 
 async function getFToken(id_token: string, hash_method: 1 | 2 = 1) {
     const headers = {
