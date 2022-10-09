@@ -1,4 +1,4 @@
-const APP_VERSION = "2.2.0"
+const APP_VERSION = "2.3.1"
 
 async function getFToken(id_token: string, hash_method: 1 | 2 = 1) {
     const headers = {
@@ -62,7 +62,6 @@ async function login(access_token: string, id_token: string, user_info: any) {
         'User-Agent': `com.nintendo.znca/${APP_VERSION}(Android/7.1.2)`,
         'X-Platform': 'Android',
         'X-ProductVersion': APP_VERSION,
-        'Authorization': 'Bearer'
     }
     const [f, request_id, timestamp] = await getFToken(id_token)
 
