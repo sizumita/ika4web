@@ -1,5 +1,3 @@
-const APP_VERSION = "2.3.1"
-
 async function getFToken(id_token: string, hash_method: 1 | 2 = 1) {
     const headers = {
         'User-Agent': 'ika4web/1.0.0',
@@ -17,6 +15,14 @@ async function getFToken(id_token: string, hash_method: 1 | 2 = 1) {
 
     const data = await resp.json()
     return [data.f, data.request_id, data.timestamp]
+}
+
+async function getNSOAppVersion() {
+    const page = await fetch("https://apps.apple.com/us/app/nintendo-switch-online/id1234806557")
+    const text = await page.text()
+    const elt = text.match(/<p class="whats-new__latest__version">Version (?<version>[0-9.]+)<\/p>/)
+    if (!elt) throw new Error("NSO app version not found.")
+    return elt.groups!.version
 }
 
 async function getToken(session_token: string) {
@@ -50,18 +56,18 @@ async function getAccountInfo(access_token: string) {
         'Content-Type': 'application/json',
         'User-Agent': 'NASDKAPI; Android',
     }
-    const resp = await fetch("https://api.accounts.nintendo.com/2.0.0/users/me", {headers})
+    const resp = await fetch("https://api.accounts.nintendo.com/2.0.0/users/me", { headers })
     return await resp.json()
 }
 
-async function login(access_token: string, id_token: string, user_info: any) {
+async function login(access_token: string, id_token: string, user_info: any, appVersion: string) {
     const url = 'https://api-lp1.znc.srv.nintendo.net/v3/Account/Login'
     const headers = {
         'Accept-Encoding': 'gzip',
         'Content-Type': 'application/json; charset=utf-8',
-        'User-Agent': `com.nintendo.znca/${APP_VERSION}(Android/7.1.2)`,
+        'User-Agent': `com.nintendo.znca/${appVersion}(Android/7.1.2)`,
         'X-Platform': 'Android',
-        'X-ProductVersion': APP_VERSION,
+        'X-ProductVersion': appVersion,
     }
     const [f, request_id, timestamp] = await getFToken(id_token)
 
@@ -94,15 +100,15 @@ async function login(access_token: string, id_token: string, user_info: any) {
     return data['result']['webApiServerCredential']['accessToken']
 }
 
-async function getWebServiceToken(new_access_token: string) {
+async function getWebServiceToken(new_access_token: string, appVersion: string) {
     const url = 'https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken'
     const headers = {
         'Accept-Encoding': 'gzip',
         'Authorization': `Bearer ${new_access_token}`,
         'Content-Type': 'application/json; charset=utf-8',
-        'User-Agent': `com.nintendo.znca/${APP_VERSION}(Android/7.1.2)`,
+        'User-Agent': `com.nintendo.znca/${appVersion}(Android/7.1.2)`,
         'X-Platform': 'Android',
-        'X-ProductVersion': APP_VERSION,
+        'X-ProductVersion': appVersion,
     }
     const [f, request_id, timestamp] = await getFToken(new_access_token, 2)
 
@@ -139,9 +145,10 @@ async function getAccessToken(session_token: string, sendResponse: (response?: a
         })
     }
     try {
+        const appVersion = await getNSOAppVersion()
         const userInfo = await getAccountInfo(access_token)
-        const new_access_token = await login(access_token, id_token, userInfo)
-        const [accessToken, expiresAt] = await getWebServiceToken(new_access_token)
+        const new_access_token = await login(access_token, id_token, userInfo, appVersion)
+        const [accessToken, expiresAt] = await getWebServiceToken(new_access_token, appVersion)
         sendResponse({
             status: true,
             access_token: accessToken,
@@ -171,4 +178,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
 })
 
-export {}
+export { }
